@@ -42,9 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # second part
+    'corsheaders',
     'djoser',
     'whitenoise',
-    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     # third part
@@ -54,9 +54,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",  # cors headers
     'django.middleware.common.CommonMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware", # whitenoise
-    "corsheaders.middleware.CorsMiddleware",  # cors headers
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -154,6 +154,12 @@ AUTH_USER_MODEL = 'authsystem.User'
 # RestFramework settings
 
 REST_FRAMEWORK = {
+    ''''DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ],'''
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'server.jwt.JWTAuthClass'
     ]
