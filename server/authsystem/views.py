@@ -3,6 +3,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
+
+from .models import UserManager
 from .serializers import LoginSerializer, RegisterSerializer
 
 class AuthAPIView(generics.GenericAPIView):
@@ -32,9 +34,9 @@ class RegisterAPIView(generics.GenericAPIView):
     permission_classes = (AllowAny, )
 
     def post(self, request):
-        user = self.serializer_class(data=request.data)
+        data = self.serializer_class(data=request.data)
 
-        if user.is_valid():
-            user.save()
-            return Response(user.data, status=status.HTTP_200_OK)
-        return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        if data.is_valid():
+            data.save()
+            return Response(data.data, status=status.HTTP_200_OK)
+        return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -8,7 +8,7 @@ from django.contrib.auth.models import (
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, password=None):
+    def create_user(self, username, email, password,):
         if username is None:
             raise TypeError('Users must have a username.')
 
@@ -36,6 +36,7 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=256, unique=True)
     is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False) 
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -54,6 +55,12 @@ class User(AbstractBaseUser):
 
     def get_short_name(self):
         return self.username
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
 
     @property
     def token(self):
