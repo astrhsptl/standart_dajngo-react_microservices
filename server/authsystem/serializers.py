@@ -12,7 +12,7 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 'email', 'password', 
+            'name', 'surname', 'email',
             'is_superuser', 'is_staff',
         )
         read_only_fields = ['token']
@@ -26,9 +26,17 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 'email', 'password', 
+            'name', 'surname', 'email', 'password', 
             'is_superuser', 'is_staff',
         )
     
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+class UserPatchingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'name', 'surname', 'email', 'password', 
+            'is_superuser', 'is_staff',
+        )

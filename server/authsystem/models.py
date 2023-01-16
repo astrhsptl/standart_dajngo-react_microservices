@@ -1,6 +1,8 @@
 import jwt
+import uuid
 from django.db import models
-from django.conf import settings 
+from django.conf import settings
+from django.urls import reverse_lazy
 from datetime import datetime, timedelta
 from django.contrib.auth.models import (
 	AbstractBaseUser, BaseUserManager,
@@ -8,53 +10,61 @@ from django.contrib.auth.models import (
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, password,):
-        if username is None:
-            raise TypeError('Users must have a username.')
-
+    def create_user(self, email, password, name, surname, **kwargs):
         if email is None:
             raise TypeError('Users must have an email address.')
+        
+        if password is None:
+            raise TypeError('Users must have an email address.')
 
-        user = self.model(username=username, email=self.normalize_email(email))
+        user = self.model(email=self.normalize_email(email))
         user.set_password(password)
+        user.name = name
+        user.surname = surname
         user.save()
 
         return user
 
-    def create_superuser(self, username, email, password):
+    def create_superuser(self, email, password, **kwargs):
         if password is None:
             raise TypeError('Superusers must have a password.')
 
-        user = self.create_user(username, email, password)
+        user = self.create_user(email, password)
         user.is_superuser = True
         user.is_staff = True
+        user.private_access = True
         user.save()
 
         return user
 
+
 class User(AbstractBaseUser):
-    username = models.CharField(max_length=255, unique=True)
+    # id = models.UUIDField(
+    #     primary_key=True,
+    #     db_index=True,
+    #     default=uuid.uuid4,
+    #     editable=False
+    # )
     email = models.EmailField(max_length=256, unique=True)
+    name = models.CharField(max_length=256)
+    surname = models.CharField(max_length=256)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False) 
     is_staff = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     # Auth settings
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = 'email'
 
     objects = UserManager()
 
     def __str__(self):
-        return self.username
+        return self.email
 
     def get_full_name(self):
-        return self.username
+        return f'{self.name} {self.surname}'
 
     def get_short_name(self):
-        return self.username
+        return f'{self.name}'
 
     def has_perm(self, perm, obj=None):
         return self.is_superuser
@@ -66,8 +76,16 @@ class User(AbstractBaseUser):
     def token(self):
         dt = datetime.now() + timedelta(days=1)
         token = jwt.encode({
-            'username': self.username,
+            'name': self.name,
             'email': self.email,
             'exp': int(dt.strftime('%s'))
         }, settings.SECRET_KEY, algorithm='HS256')
         return token
+
+    def get_absolute_url(self,):
+        return reverse_lazy('moder_user_detail', kwargs={'id': self.id})
+
+    # class Meta:
+    #     indexes = [
+    #         models.Index(fields=['id'], name='id_index'),
+    #     ]

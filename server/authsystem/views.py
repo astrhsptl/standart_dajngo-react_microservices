@@ -1,42 +1,33 @@
-from rest_framework import status
 from rest_framework import generics
 from rest_framework.response import Response
-from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 
-from .models import UserManager
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+
+from services.authentication import authentication, register
 from .serializers import LoginSerializer, RegisterSerializer
 
-class AuthAPIView(generics.GenericAPIView):
-    def get(self, request):
-        print(request.user)
-        user = request.user
-        serializer = RegisterSerializer(user)
-        return Response({'user': serializer.data}, status=status.HTTP_200_OK) 
-
+from .models import User
+from .serializers import UserPatchingSerializer
 
 class LoginAPIView(generics.GenericAPIView):
+    '''This api relise sign in on jwt architecture. Return name, surname, email, is_superuser, is_staff and access token. Supports only post request'''
     serializer_class = LoginSerializer
     
-    def post(self, request):
-        username = request.data.get('username', None)
-        password = request.data.get('password', None)
-        user = authenticate(username=username, password=password)
-        if user:
-            serializer = self.serializer_class(user)
-            print(serializer.data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-            
-        return Response({'error': 'error'}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request) -> Response:
+        response_description, response_status = authentication(request, self.serializer_class)
+        return Response(response_description, status=response_status)
 
 class RegisterAPIView(generics.GenericAPIView):
+    '''This api relise sign up on jwt architecture. Return  name, surname, email, is_superuser, is_staff '''
     serializer_class = RegisterSerializer
     permission_classes = (AllowAny, )
 
-    def post(self, request):
-        data = self.serializer_class(data=request.data)
+    def post(self, request) -> Response:
+        response_description, response_status = register(request, self.serializer_class)
+        return Response(response_description, status=response_status)
 
-        if data.is_valid():
-            data.save()
-            return Response(data.data, status=status.HTTP_200_OK)
-        return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserInformationAndPatchingRetrieveAPIView(generics.RetrieveUpdateDestroyAPIView):
+    ''' API for User db model. Support get, put, patch, delete. Queryset - concrete object '''
+    queryset = User.objects.all()
+    serializer_class = UserPatchingSerializer

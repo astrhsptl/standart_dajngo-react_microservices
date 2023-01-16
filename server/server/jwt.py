@@ -1,10 +1,11 @@
+import jwt
+
+from django.conf import settings
 from rest_framework.authentication import (
     BaseAuthentication, get_authorization_header
 )
-from rest_framework.exceptions import AuthenticationFailed
-from django.conf import settings
+
 from authsystem.models import User
-import jwt
 
 class JWTAuthClass(BaseAuthentication):
     def authenticate(self, request):
