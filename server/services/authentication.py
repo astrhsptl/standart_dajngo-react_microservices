@@ -2,6 +2,7 @@ from django.http import request
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.serializers import Serializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 def authentication(request: request, serializer_class: Serializer):
@@ -18,16 +19,39 @@ def authentication(request: request, serializer_class: Serializer):
     user = authenticate(request, email=email, password=password)
 
     if user:
-        serializer = serializer_class(user)
-        return serializer.data, status.HTTP_200_OK
+        serializer = dict(serializer_class(user).data)
+        tokens = _get_access_refresh_tokens_for_user(user)
+        serializer['access'] = tokens['access'] 
+        serializer['refresh'] = tokens['refresh']
+        return serializer, status.HTTP_200_OK
 
     return {'error': 'authentication error'}, status.HTTP_400_BAD_REQUEST
 
 def register(request: request, serializer_class: Serializer):
+    '''Register new user. Get request and serializer class. Retern new user params and access/refresh tokens'''
     data = serializer_class(data=request.data)
     if data.is_valid():
-        data.save()
-        return data.data, status.HTTP_200_OK
+        user = data.save()
+        tokens = _get_access_refresh_tokens_for_user(user)
+        
+        data = dict(data.data)
+        data['access'] = tokens['access'] 
+        data['refresh'] = tokens['refresh']
+
+        return data, status.HTTP_200_OK
 
     return data.errors, status.HTTP_400_BAD_REQUEST
+
+
+
+def _get_access_refresh_tokens_for_user(user) -> dict:
+    '''Get django user object. Return access and refresh tokens'''
+    if user is None:
+        raise TypeError('This function get user but not None')
+        
+    tokens = RefreshToken.for_user(user)
+    return {
+        'refresh': str(tokens),
+        'access': str(tokens.access_token),
+    }
     

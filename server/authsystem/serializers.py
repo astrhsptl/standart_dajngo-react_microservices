@@ -4,7 +4,7 @@ from .models import User
 
 
 class LoginSerializer(serializers.ModelSerializer):
-
+    '''Login serializer. Including name, surname, email, password, is_superuser, is_staff'''
     password = serializers.CharField(
         max_length=256
     )
@@ -12,13 +12,12 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'name', 'surname', 'email',
+            'name', 'surname', 'email', 'password',
             'is_superuser', 'is_staff',
         )
-        read_only_fields = ['token']
 
 class RegisterSerializer(serializers.ModelSerializer):
-    
+    '''Register serializer. Including name, surname, email, password, is_superuser, is_staff'''
     password = serializers.CharField(
         max_length=256
     )
@@ -34,6 +33,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 class UserPatchingSerializer(serializers.ModelSerializer):
+    '''Serializer for user patching. Including name, surname, email, password, is_superuser, is_staff'''
     class Meta:
         model = User
         fields = (
