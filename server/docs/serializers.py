@@ -1,15 +1,8 @@
 from rest_framework import serializers
 
 from .models import (
-    CodeAlghorythm, LoadedFiles, CodedFiles,
+    LoadedFiles, CodedFiles,
 )
-
-
-class CodeAlghorythmSerializer(serializers.ModelSerializer):
-    '''Serializer for code algorytms. Catching title and discription'''
-    class Meta:
-        model = CodeAlghorythm
-        fields = '__all__'
 
 class LoadedFilesSerializer(serializers.ModelSerializer):
     '''Serializer for loaded files. Catching title, discription, file, published, loaded date'''
