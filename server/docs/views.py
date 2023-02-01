@@ -4,15 +4,40 @@ from rest_framework.generics import (
 from rest_framework.permissions import (
     IsAuthenticated,
 )
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+
+from services.start_coding import start_coding
 from .serializers import (
     LoadedFilesSerializer, CodedFilesSerializer,
 )
-
+from .permissions import IsOwnerPermission
 from .models import (
     LoadedFiles, CodedFiles,
 )
 
-from .permissions import IsOwnerPermission
+
+FILE_TYPES = ['txt', 'doc', 'docx', ]
+
+class StartCodingAPIView(APIView):
+    '''
+        Wait:
+        {
+            'file_id': int,
+            'alghorythm': str
+        }
+    '''
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request,):
+        start_coding(request)
+
+        return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 '''
@@ -51,17 +76,3 @@ class CodedFilesRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     queryset = CodedFiles.objects.all()
     serializer_class = CodedFilesSerializer
     permission_classes = (IsAuthenticated, IsOwnerPermission,)
-
-
-'''
-{
-    "name": "van",
-    "surname": "qwfiuhw",
-    "email": "asd@adfqw.as",
-    "password": "21c49oirt8y12t4p9h",
-    "is_superuser": false,
-    "is_staff": false,
-    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc0MDcxNjU2LCJqdGkiOiI3NTBhYjYxODk2ZTE0ZDgwODlhZGY5Yjk1NmY5YTI3OCIsInVzZXJfaWQiOjF9.oXt0xoo5tGmDK4Ir5fE0BXgLNW6k3DiqJlImWTisfUc",
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY3NDE1Nzc1NiwianRpIjoiZWNmM2ExYjEzZDExNDlhMGE5YjM4ZjYwNjdhODk0OTkiLCJ1c2VyX2lkIjoxfQ.-W767Ft04faK8LGbDVXjRuO2XaHclD4VuEoiWWEZGZo"
-}
-'''

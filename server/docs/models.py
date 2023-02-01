@@ -18,7 +18,7 @@ class LoadedFiles(models.Model):
     # )
     title = models.CharField(max_length=256)
     discription = models.CharField(max_length=4096)
-    # file = models.FileField(upload_to='uploads/loaded/%Y/%m/%d/')
+    file = models.FileField(upload_to='uploads/loaded/%Y/%m/%d/')
     author = models.ForeignKey(User, models.CASCADE, blank=True, null=True)
     published = models.BooleanField(default=False)
     loaded_date = models.DateField(auto_now=True)
@@ -34,9 +34,8 @@ class LoadedFiles(models.Model):
 
 class CodedFiles(models.Model):
     ALGHORYTHMS = (
-        (('alg1'), ('alg1')),
-        (('alg2'), ('alg2')),
-        (('alg3'), ('alg3')),
+        (('Changed alghorythm'), ('Changed alghorythm')),
+        (('Huffman alghorythm'), ('Huffman alghorythm')),
     )
     
     # id = models.UUIDField(
@@ -49,8 +48,8 @@ class CodedFiles(models.Model):
     title = models.CharField(max_length=256)
     discription = models.CharField(max_length=4096)
     published = models.BooleanField(default=False)
-    # file = models.FileField(upload_to='uploads/coded/%Y/%m/%d/')
-    author = models.ForeignKey(User, models.CASCADE)
+    text =  models.CharField(max_length=65900)
+    author = models.ForeignKey(User, models.CASCADE, default=None)
     algorithm = models.CharField(max_length=40, choices=ALGHORYTHMS)
     coded_date = models.DateField(auto_now=True)
 
