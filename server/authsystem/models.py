@@ -39,12 +39,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    # id = models.UUIDField(
-    #     primary_key=True,
-    #     db_index=True,
-    #     default=uuid.uuid4,
-    #     editable=False
-    # )
+    id = models.UUIDField(
+        primary_key=True,
+        db_index=True,
+        default=uuid.uuid4,
+        editable=False
+    )
     email = models.EmailField(max_length=256, unique=True)
     name = models.CharField(max_length=256)
     surname = models.CharField(max_length=256)
@@ -85,7 +85,7 @@ class User(AbstractBaseUser):
     def get_absolute_url(self,):
         return reverse_lazy('moder_user_detail', kwargs={'id': self.id})
 
-    # class Meta:
-    #     indexes = [
-    #         models.Index(fields=['id'], name='id_index'),
-    #     ]
+    class Meta:
+        indexes = [
+            models.Index(fields=['id'], name='id_index'),
+        ]

@@ -11,10 +11,10 @@ def authentication(request: request, serializer_class: Serializer):
     password = request.data.get('password', None)
 
     if not email:
-        return {'error': 'no email'}, status.HTTP_400_BAD_REQUEST
+        return {'detail': 'no email'}, status.HTTP_400_BAD_REQUEST
 
     if not password:
-        return {'error': 'no password'}, status.HTTP_400_BAD_REQUEST
+        return {'detail': 'no password'}, status.HTTP_400_BAD_REQUEST
     
     user = authenticate(request, email=email, password=password)
 
@@ -25,7 +25,7 @@ def authentication(request: request, serializer_class: Serializer):
         serializer['refresh'] = tokens['refresh']
         return serializer, status.HTTP_200_OK
 
-    return {'error': 'authentication error'}, status.HTTP_400_BAD_REQUEST
+    return {'detail': 'authentication error'}, status.HTTP_400_BAD_REQUEST
 
 def register(request: request, serializer_class: Serializer):
     '''Register new user. Get request and serializer class. Retern new user params and access/refresh tokens'''
@@ -41,8 +41,6 @@ def register(request: request, serializer_class: Serializer):
         return data, status.HTTP_200_OK
 
     return data.errors, status.HTTP_400_BAD_REQUEST
-
-
 
 def _get_access_refresh_tokens_for_user(user) -> dict:
     '''Get django user object. Return access and refresh tokens'''

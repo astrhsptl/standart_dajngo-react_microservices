@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     
     # third part
     'authsystem.apps.AuthsystemConfig',
-    'docs.apps.DocsConfig',
 ]
 
 MIDDLEWARE = [

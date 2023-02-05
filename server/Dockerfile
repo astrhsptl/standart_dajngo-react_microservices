@@ -9,9 +9,6 @@ RUN apk --update add
 RUN apk add gcc libc-dev libffi-dev jpeg-dev zlib-dev libjpeg
 RUN apk add postgresql-dev
 
-RUN apk add antiword 
-# RUN apk add python-pip zlib1g-dev
-
 RUN pip install --upgrade pip
 
 COPY ./requirements.txt .
@@ -19,7 +16,6 @@ COPY ./entrypoint.sh /app/entrypoint.sh
 
 RUN chmod +x /app/entrypoint.sh
 RUN pip install -r requirements.txt
-RUN pip install textract
 
 COPY . /app
 
